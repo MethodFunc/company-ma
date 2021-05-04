@@ -5,7 +5,6 @@ import mahotas as mt
 import numpy as np
 import pandas as pd
 
-
 from skimage.feature import local_binary_pattern
 from scipy import stats
 
@@ -13,6 +12,7 @@ from scipy import stats
 기본 모듈 : pandas
  데이터 프레임의 정규화와 IQR을 계산하여 결측값을 제거하는 모듈
 '''
+
 
 def ttest_2samp(df1, df2):
     p_value_05 = {}
@@ -36,7 +36,6 @@ def normalizer(dataframe, method='z_score'):
     :return: 정규화된 데이터 프레임
     '''
     # normalizer
-    normal = []
 
     if method == 'z_score':
         output = (dataframe - dataframe.mean()) / dataframe.std()

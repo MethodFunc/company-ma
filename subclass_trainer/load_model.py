@@ -105,9 +105,9 @@ def create_model(train_image, classnum):
     filter = [32, 64]
     stride = [(1, 1), (2, 2)]
 
-    for f, s in zip(filter, stride):
-        x = Inception(filter_size=f, kernel=(3, 3), strides=s)(stem)
-
+    x = Inception(filter_size=filter[0], kernel=(3, 3), strides=stride[0])(stem)
+    x = Inception(filter_size=filter[1], kernel=(3, 3), strides=stride[1])(x)
+    
     y = Conv2D(64, (3, 3), strides=(2, 2), padding='same')(stem)
     y = Activation('relu')(y)
 
