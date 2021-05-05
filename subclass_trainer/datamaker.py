@@ -5,7 +5,7 @@ import os
 import numpy as np
 from pprint import pprint
 
-from tensorflow.keras.utils import to_categorical, plot_model
+from tensorflow.keras.utils import to_categorical
 
 
 class DataMaker:
@@ -21,7 +21,7 @@ class DataMaker:
         self.depth = depth
         self.classnum = len(self.categories)
 
-        self.train_set, self.test_set = [], []
+        self.train_set, self.test_set = {}, {}
 
     def __call__(self):
         self.split_image()
@@ -65,18 +65,18 @@ class DataMaker:
 
             for imgs in img_file_list[:train_num]:
                 img_path = f"{cat_path}/{imgs}"
-                self.train_set.append((img_path, label))
+                self.train_set[img_path] = label
 
             for imgs in img_file_list[train_num:self.sample_image]:
                 img_path = f"{cat_path}/{imgs}"
-                self.test_set.append((img_path, label))
+                self.test_set[img_path] = label
 
         random.shuffle(self.train_set)
         random.shuffle(self.test_set)
 
     def load_image_data(self, dataset):
         images, labels = [], []
-        for imgs, label in dataset:
+        for imgs, label in dataset.items():
             img = cv2.imread(imgs)
             for (i, j) in self.roi:
                 x, y = i * self.width, j * self.height
