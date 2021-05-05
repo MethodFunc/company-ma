@@ -1,8 +1,10 @@
 import pandas as pd
+
 '''
 기본 모듈 : pandas
  데이터 프레임의 정규화와 IQR을 계산하여 결측값을 제거하는 모듈
 '''
+
 
 def normalizer(dataframe, method='z_score'):
     '''
@@ -22,7 +24,7 @@ def normalizer(dataframe, method='z_score'):
     return output
 
 
-def calc_IQR(dataframe, fill_miss=None):
+def calc_iqr(dataframe, fill_miss=None):
     '''
     :param dataframe: 기존 판다스 데이터 프레임
     :param fill_miss: mean : 결측값을 평균으로 채움, zero : 결측값을 0으로 채움, drop : 결측값 행을 모두 제거함, 기본값은 None이다.
@@ -37,12 +39,13 @@ def calc_IQR(dataframe, fill_miss=None):
     output = rd[(dataframe > df_dec['IQR_min'])]
 
     if fill_miss == 'mean':
-        output = rd.fillna(rd.mean())
+        output = output.fillna(output.mean())
 
     if fill_miss == 'zero':
-        output = rd.fillna(0)
+        output = output.fillna(0)
 
     if fill_miss == 'drop':
-        output = rd.dropna(axis=0)
+        output = output.dropna(axis=0)
 
     return output
+

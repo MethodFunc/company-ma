@@ -46,7 +46,7 @@ def normalizer(dataframe, method='z_score'):
     return output
 
 
-def calc_IQR(dataframe, fill_miss=None):
+def calc_iqr(dataframe, fill_miss=None):
     '''
     :param dataframe: 기존 판다스 데이터 프레임
     :param fill_miss: mean : 결측값을 평균으로 채움, zero : 결측값을 0으로 채움, drop : 결측값 행을 모두 제거함, 기본값은 None이다.
@@ -61,13 +61,13 @@ def calc_IQR(dataframe, fill_miss=None):
     output = rd[(dataframe > df_dec['IQR_min'])]
 
     if fill_miss == 'mean':
-        output = rd.fillna(rd.mean())
+        output = output.fillna(output.mean())
 
     if fill_miss == 'zero':
-        output = rd.fillna(0)
+        output = output.fillna(0)
 
     if fill_miss == 'drop':
-        output = rd.dropna(axis=0)
+        output = output.dropna(axis=0)
 
     return output
 
@@ -83,6 +83,18 @@ def calc_mann(df_name, df, df2):
 
         if p < 0.05:
             globals()[f"{df_name}_pvalue"][col] = f"{p:.4f}"
+
+
+def shapiro_test(df, alpha=0.05):
+    ''' 판다스 정규성 검사'''
+    normal = []
+    for col in df.columns:
+        s, p = stats.shapiro(df[col])
+
+        if p > alpha:
+            normal.append(col)
+
+    print(f"정규성 만족: {col}")
 
 
 def feature_extract_hl(source_path, categories, roi, image_sample):
