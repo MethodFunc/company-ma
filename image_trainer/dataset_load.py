@@ -14,7 +14,7 @@ logger = logging.getLogger("dataset_load")
 def load_data(source_path, categories, sample_number, validation_ratio=0.1):
     logger.info("======dataset load start======")
     source_path = source_path.replace("\\", "/")
-    train_set, test_set = [], []
+    train_set, test_set = {}, {}
     for cat in categories:
         path = f"{source_path}/{cat}"
 
@@ -39,11 +39,11 @@ def load_data(source_path, categories, sample_number, validation_ratio=0.1):
 
         for img in img_list[:train_count]:
             img_path = f"{path}/{img}"
-            train_set.append([img_path, label])
+            train_set[img_path] = label
 
         for img in img_list[train_count:sample_number]:
             img_path = f"{path}/{img}"
-            test_set.append([img_path, label])
+            test_set[img_path] = labels
 
     logger.info("======dataset load end======")
     return train_set, test_set

@@ -2,13 +2,11 @@ import cv2
 import os
 import fnmatch
 import random
-import tensorflow as tf
 import numpy as np
 
 from roi import setting_roi
-from tensorflow.keras.layers import Dense, Dropout, Conv2D, MaxPooling2D, BatchNormalization, Activation
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.models import Sequential, Model, load_model
+from tensorflow.keras.models import load_model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 
 
@@ -19,7 +17,7 @@ class datamaker:
         self.roi = roi
         self.train_sample = train_sample
         self.train_image, self.train_label, self.val_image, self.val_label = [], [], [], []
-        self.train_set, self.val_set = [], []
+        self.train_set, self.val_set = {}, {}
 
         self.validation_sample = 0.1
         self.width, self.height = 150, 150
@@ -57,11 +55,11 @@ class datamaker:
 
             for img in img_file_list[:train_number]:
                 img_path = f"{path}/{img}"
-                self.train_set.append([img_path, label])
+                self.train_set[img_path] = label
 
             for img in img_file_list[train_number:]:
                 img_path = f"{path}/{img}"
-                self.val_set.append([img_path, label])
+                self.val_set[img_path] = label
 
         random.shuffle(self.train_set)
         random.shuffle(self.val_set)
