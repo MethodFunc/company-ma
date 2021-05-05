@@ -141,3 +141,19 @@ def feature_extract_hl(source_path, categories, roi, image_sample):
 
         globals()[f'{cat}_hal'] = hal_list
         globals()[f'{cat}_hal_pd'] = pd.DataFrame(hal_list, columns=hal_col)
+
+
+def outlier_indexer(dataframe, weight=1.5):
+    outlier_index = {}
+    for col in dataframe:
+        iqr_75 = np.percentile(dataframe[col], 75)
+        iqr_25 = np.percentile(dataframe[col], 25)
+        iqr = iqr_75 - iqr_25
+        iqr_min = iqr_25 - weight * iqr
+        iqr_max = iqr_75 + weight * iqr
+
+        indexer = dataframe[col][(dataframe[col] < iqr_min) | (dataframe[col] > iqr_max)].index
+
+        outlier_index[col] = indexer
+
+    return outlier_index
