@@ -1,55 +1,47 @@
 import cv2
 import os
-import matplotlib.pyplot as plt
-import matplotlib.image as im
 
-# filepath = 'D:/33A,33C_data/33A/0930'
 
-filepath = r'D:\Harry\000.DataAnalysis\002.python\ROI_IMAGE'
-filepath = filepath.replace('\\', '/')
+def make_line(source_path, save_path, width, height):
+    file_list = []
+    try:
+        for filename in os.listdir(source_path):
+            if filename.endswith('.JPG'):
+                file_list.append(filename)
+    except Exception as err:
+        print(err)
+        file_list.append(filepath)
 
-save_folder = r'D:\Harry\000.DataAnalysis\003.ROI_image'
-save_folder = save_folder.replace('\\', '/')
+    print(f'files len: {len(file_list)}')
 
-filelist = []
-try:
-    for filename in os.listdir(filepath):
-        if filename.endswith('.JPG'):
-            filelist.append(filename)
-except Exception as err:
-    print(err)
-    filelist.append(filepath)
+    for i in range(len(file_list)):
+        img = cv2.imread(f'{filepath}/{file_list[i]}', cv2.IMREAD_ANYCOLOR)
+        img_width, img_height = img.shape[0], img.shape[1]
+        print(f'img_width: {img_width}\t\timg_height: {img_height}')
 
-print(f'filelist len: {len(filelist)}')
+        line_width = 0
+        while True:
+            img = cv2.line(img, (0, line_width), (img_height, line_width), (0, 255, 255), 2)
+            line_width += width
+            if line_width >= img_width:
+                break
 
-for i in range(len(filelist)):
-    img = cv2.imread(f'{filepath}/{filelist[i]}', cv2.IMREAD_ANYCOLOR)
-    img_width, img_height = img.shape[0], img.shape[1]
-    print(f'img_width: {img_width}\t\timg_height: {img_height}')
+        line_height = 0
+        while True:
+            img = cv2.line(img, (line_height, 0), (line_height, img_width), (0, 255, 255), 2)
+            line_height += height
+            if line_height >= img_height:
+                break
 
-    line_width = 0
-    while True:
-        # img = cv2.line(img, (line_width, 0), (line_width, img_height), (100, 100, 100), 2)
-        img = cv2.line(img, (0, line_width), (img_height, line_width), (0, 255, 255), 2)
-        line_width += 150
-        if line_width >= img_width:
-            break
+        if not os.path.isdir(save_path):
+            os.mkdir(save_path)
 
-    line_height = 0
-    while True:
-        # img = cv2.line(img, (0, line_height), (img_width, line_height), (100, 100, 100), 2)
-        img = cv2.line(img, (line_height, 0), (line_height, img_width), (0, 255, 255), 2)
-        line_height += 150
-        if line_height >= img_height:
-            break
+        cv2.imwrite(f'{save_path}/ROI{width}x{height}_{file_list[i]}', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
-    # cv2.imshow("test", img)
-    cv2.imwrite(f'{save_folder}/2ROI150_{filelist[i]}', img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
-# for i in range(len(filelist)):
-#     fig = plt.figure(figsize=(7,10))
-#     plt_img = im.imread(f'{save_folder}/ROI150_{filelist[0]}')
-#     plt.imshow(plt_img)
-#     plt.show()
+if __name__ == "__main__":
+    filepath = r'D:\Harry\000.DataAnalysis\002.python\ROI_IMAGE'
+    save_folder = r'D:\Harry\000.DataAnalysis\003.ROI_image'
+    make_line(source_path=filepath, save_path=save_folder, width=150, height=150)
