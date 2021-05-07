@@ -69,8 +69,9 @@ def load_image(name, dataset, roi=None, crop=None, height=150, width=150, depth=
                     roi_img = img[y:y + height, x:x + width]
                     images.append(roi_img)
                     labels.append(label)
-            except:
+            except Exception as e:
                 logger.error(f'image processing failed at {str(imgs)}')
+                logger.warning(e)
                 pass
 
     images = np.array(images).reshape(-1, height, width, depth)
@@ -88,13 +89,15 @@ def image_preprocessing(image):
 
     return img_rgb
 
+
 if __name__ == "__main__":
     source_path = r"D:\weather\lbp_result"
     categories = ['normal', 'normal_night', 'fog', 'fog_night']
     sample_number = 100
 
     train_data, test_data = load_data(source_path, categories, sample_number)
-    roi = [(2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (8, 1), (9, 1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2)]
+    roi = [(2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0), (8, 0), (9, 0), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1),
+           (7, 1), (8, 1), (9, 1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2)]
 
     x_train, y_train = load_image(train_data, roi=roi)
     x_test, y_test = load_image(test_data, roi=roi)
