@@ -12,12 +12,13 @@ def system_splits(paths):
         if not os.path.isdir(main_path):
             continue
 
-        print(f"{folder} start...")
         file_list = fnmatch.filter(os.listdir(main_path), "*.jpg")
 
         if len(file_list) == 0:
             print(f"{folder} 폴더 안에 이미지 파일이 없습니다.")
             continue
+
+        print(f"{folder} start...")
 
         for system in system_folder:
             if not os.path.isdir(f"{main_path}/{system}"):
