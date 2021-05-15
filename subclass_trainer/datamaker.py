@@ -9,17 +9,17 @@ from tensorflow.keras.utils import to_categorical
 
 
 class DataMaker:
-    def __init__(self, SOURCE_PATH, CATEGORIES, ROI, SAMPLE_IMAGE, validation_ratio=0.1, width=150, height=150,
+    def __init__(self, source_path, categories, roi, sample_image, validation_ratio=0.1, width=150, height=150,
                  depth=3):
-        self.source_path = SOURCE_PATH
-        self.categories = CATEGORIES
-        self.sample_image = SAMPLE_IMAGE
+        self.source_path = source_path
+        self.categories = categories
+        self.sample_image = sample_image
         self.validation_ratio = validation_ratio
-        self.roi = ROI
+        self.roi = roi
         self.width = width
         self.height = height
         self.depth = depth
-        self.classnum = len(self.categories)
+        self.classes = len(self.categories)
 
         self.train_set, self.test_set = {}, {}
 
@@ -31,8 +31,8 @@ class DataMaker:
 
         train_images = train_images / 255.
         test_images = test_images / 255.
-        train_labels = to_categorical(train_labels, self.classnum)
-        test_labels = to_categorical(test_labels, self.classnum)
+        train_labels = to_categorical(train_labels, self.classes)
+        test_labels = to_categorical(test_labels, self.classes)
 
         return train_images, train_labels, test_images, test_labels
 
@@ -63,13 +63,8 @@ class DataMaker:
 
             label = self.categories.index(cat)
 
-            for imgs in img_file_list[:train_num]:
-                img_path = f"{cat_path}/{imgs}"
-                self.train_set[img_path] = label
-
-            for imgs in img_file_list[train_num:self.sample_image]:
-                img_path = f"{cat_path}/{imgs}"
-                self.test_set[img_path] = label
+            self.train_set.update({f"{cat_path}/{img}": label for img in img_file_list[:train_num]})
+            self.test_set.update({f"{cat_path}/{img}": label for img in img_file_list[train_num:self.sample_image]})
 
         random.shuffle(self.train_set)
         random.shuffle(self.test_set)
