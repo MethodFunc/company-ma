@@ -4,7 +4,7 @@ import shutil
 import fnmatch
 import numpy as np
 
-from roi import setting_roi
+from .roi import setting_roi
 from tensorflow.keras.models import load_model
 
 
@@ -29,7 +29,7 @@ def classifier(path: str, model_path: str, categories: list, roi: list, show=Non
         predict_value = [np.argmax(pred) for pred in predict]
         predict_list = [predict_value.count(n) for n in range(len(categories))]
 
-        if show:
+        if type(show) is int:
             counted = show_predict_categories(img_name=img_name, predict_list=predict_list, categories=categories,
                                               show_number=show)
             count += counted

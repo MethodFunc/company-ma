@@ -37,13 +37,8 @@ def load_data(source_path, categories, sample_number, validation_ratio=0.1):
         val_count = int(sample_number * validation_ratio)
         train_count = sample_number - val_count
 
-        for img in img_list[:train_count]:
-            img_path = f"{path}/{img}"
-            train_set[img_path] = label
-
-        for img in img_list[train_count:sample_number]:
-            img_path = f"{path}/{img}"
-            test_set[img_path] = label
+        train_set.update({f"{path}/{img}": label for img in img_list[:train_count]})
+        test_set.update({f"{path}/{img}" : label for img in img_list[train_count:sample_number]})
 
     logger.info("======dataset load end======")
     return train_set, test_set
