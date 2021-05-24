@@ -53,6 +53,7 @@ class Model_train:
         # Model Check-Point
         os.chdir(self.SOURCE_PATH)
         cp_path = f'cp_{self.start_time.strftime("%Y%m%d%H%M%S")}.tf'
+        
         self.checkpoint = tf.keras.callbacks.ModelCheckpoint(filepath=cp_path, monitor='val_loss', verbose=3,
                                                              save_best_only=True)
 

@@ -49,7 +49,7 @@ def load_image(name, dataset, roi=None, crop=None, height=150, width=150, depth=
     logger.info(f"====== {name} set load start======")
     random.shuffle(dataset)
     images, labels = [], []
-    for imgs, label in dataset:
+    for imgs, label in dataset.items():
         img = cv2.imread(imgs)
 
         if crop:

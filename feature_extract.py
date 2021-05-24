@@ -56,7 +56,7 @@ for file_list in tqdm(files):
 
         roi_img = mt.colors.rgb2gray(roi_img, dtype=np.uint8)
         haralick = mt.features.haralick(roi_img).mean(axis=0)
-        lbp = local_binary_pattern(roi_img, 16, 2, 'uniform').mean(axis=0)
+        lbp = local_binary_pattern(roi_img, 8, 3, 'uniform').mean(axis=0)
         # lbp2 = local_binary_pattern(roi_img, 16, 2, 'uniform')
 
         roi_image.append(roi_img)
