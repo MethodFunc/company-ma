@@ -4,7 +4,7 @@ import tensorflow as tf
 from datetime import datetime
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from datamaker import DataMaker
-from transfer_module import transfer, trainable_true
+from transfer_module import transfer, trainable_true, view_graph
 
 if __name__ == "__main__":
 
@@ -50,3 +50,5 @@ if __name__ == "__main__":
     model = trainable_true(model=model)
     history = model.fit(x_train, y_train, epochs=100, batch_size=128, validation_data=(x_test, y_test),
                         callbacks=[cp, tb])
+
+    view_graph(history=history)

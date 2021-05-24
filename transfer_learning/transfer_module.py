@@ -1,6 +1,9 @@
+import matplotlib.pyplot as plt
+
 from tensorflow.keras.models import load_model, Sequential
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Dropout
+
 
 def transfer(model_path, categories):
     classes = len(categories)
@@ -38,3 +41,21 @@ def trainable_true(model):
     model.compile(loss='categorical_crossentropy', optimizer=Adam(lr=0.0005), metrics=["accuracy"])
 
     return model
+
+
+def view_graph(history):
+    plt.figure(figsize=(32, 18))
+    fig, loss_ax = plt.subplots()
+    acc_ax = loss_ax.twinx()
+    loss_ax.plot(history.history["loss"], "y", label="Train loss")
+    loss_ax.plot(history.history["val_loss"], "r", label="Val loss")
+    loss_ax.set_xlabel("Epochs")
+    loss_ax.set_ylabel("Loss")
+    loss_ax.legend(loc="upper right")
+
+    acc_ax.plot(history.history["accuracy"], "b", label="Train acc")
+    acc_ax.plot(history.history["val_accuracy"], "g", label="Val acc")
+    acc_ax.set_ylabel("Accuracy")
+    acc_ax.legend(loc="upper left")
+
+    plt.show()
