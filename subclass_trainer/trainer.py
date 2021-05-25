@@ -1,21 +1,32 @@
 import os
+import configparser
 
 from datamaker import DataMaker
 from load_model import create_model
 from tensorflow.keras.callbacks import ModelCheckpoint, TensorBoard
 from roi import setting_roi
-w
 from datetime import datetime
 
 if __name__ == "__main__":
-    source_path = 'D:/weather/categorical'
-    categories = ['normal_day', 'normal_night', 'fog_day', 'fog_night']
-    classes = len(categories)
-    roi0 = [(5, 0), (6, 0), (4, 0), (8, 0)]
-    roi1 = [(5, 1), (6, 1), (7, 1), (8, 1), (9, 1)]
-    sample_image = 400
+    config = configparser.ConfigParser()
+    config.read("trainer.ini")
 
-    img_load = DataMaker(source_path=source_path, categories=categories, roi=roi0, sample_image=sample_image)
+    source_path = config["train"]["source_path"]
+    if "\\" in source_path:
+        source_path = source_path.replace("\\", "/")
+
+    categories = config["train"]["categories"].split(",")
+    classes = len(categories)
+
+    if "/" not in config["train"]["roi"]:
+        roi = setting_roi(config["train"]["roi"])
+    else:
+        temp = config["train"]["roi"].split(",")
+        roi = [(int(shape.split("/")[0]), int(shape.split("/")[1])) for shape in temp]
+
+    sample_image = int(config["train"]["sample_image"])
+
+    img_load = DataMaker(source_path=source_path, categories=categories, roi=roi, sample_image=sample_image)
 
     (train_image, train_label, test_image, test_label) = img_load()
 
