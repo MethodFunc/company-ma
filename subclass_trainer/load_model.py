@@ -133,6 +133,6 @@ def create_model(train_image, classnum):
     LOSS = tf.keras.losses.categorical_crossentropy
     OPTIMIZER = tf.keras.optimizers.Nadam()
 
-    model.compile(loss=LOSS, metrics=['accuracy'], optimizer=OPTIMIZER)
+    model.compile(loss=LOSS, metrics=['acc'], optimizer=OPTIMIZER)
 
     return model

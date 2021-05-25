@@ -3,7 +3,7 @@ import fnmatch
 import random
 import os
 import numpy as np
-from pprint import pprint
+import logging.config
 
 from tensorflow.keras.utils import to_categorical
 
@@ -22,38 +22,47 @@ class DataMaker:
         self.classes = len(self.categories)
 
         self.train_set, self.test_set = {}, {}
+        logging.config.fileConfig("logger.conf")
+        self.logger = logging.getLogger("datamaker")
 
     def __call__(self):
-        self.split_image()
+            self.logger.info("=== Data Maker Start ===")
+            self.split_image()
 
-        train_images, train_labels = self.load_image_data(self.train_set)
-        test_images, test_labels = self.load_image_data(self.test_set)
+            self.logger.info(f'Processing training dataset...')
+            train_images, train_labels = self.load_image_data(self.train_set)
+            self.logger.info(f'Processing validation dataset...')
+            test_images, test_labels = self.load_image_data(self.test_set)
 
-        train_images = train_images / 255.
-        test_images = test_images / 255.
-        train_labels = to_categorical(train_labels, self.classes)
-        test_labels = to_categorical(test_labels, self.classes)
+            train_images = train_images / 255.
+            test_images = test_images / 255.
+            train_labels = to_categorical(train_labels, self.classes)
+            test_labels = to_categorical(test_labels, self.classes)
 
-        return train_images, train_labels, test_images, test_labels
+            self.logger.info(f'Dataset Processing Finished.')
+            self.logger.info(f'train_image: {train_images.shape}, train_label: {train_labels.shape}')
+            self.logger.info(f'test_image: {test_images.shape}, test_label: {test_labels.shape}')
+
+            return train_images, train_labels, test_images, test_labels
 
     def split_image(self):
         for cat in self.categories:
             cat_path = f"{self.source_path}/{cat}"
 
             if not os.path.isdir(cat_path):
-                pprint(f"Category: [{cat}] is not exist. Check your category or folder name.")
+                self.logger.warning(f"Category: [{cat}] is not exist. Check your category or folder name.")
                 break
 
             img_file_list = fnmatch.filter(os.listdir(cat_path), "*.jpg")
 
             if len(img_file_list) == 0:
-                pprint(f"{cat} image file does not exist.")
-                pprint("Check your files")
+                self.logger.warning(f"{cat} image file does not exist.")
+                self.logger.warning("Check your files")
                 break
 
             if len(img_file_list) < self.sample_image:
-                pprint(f"{cat} image file less then sample_image.")
-                pprint("Check your files")
+                self.logger.warning(f"{cat} image file less then sample_image.")
+                self.logger.warning("Check your files")
                 break
 
             random.shuffle(img_file_list)
@@ -65,9 +74,9 @@ class DataMaker:
 
             self.train_set.update({f"{cat_path}/{img}": label for img in img_file_list[:train_num]})
             self.test_set.update({f"{cat_path}/{img}": label for img in img_file_list[train_num:self.sample_image]})
-
-        random.shuffle(self.train_set)
-        random.shuffle(self.test_set)
+        #
+        # random.shuffle(self.train_set)
+        # random.shuffle(self.test_set)
 
     def load_image_data(self, dataset):
         images, labels = [], []
