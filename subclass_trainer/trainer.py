@@ -1,6 +1,7 @@
 import os
 import configparser
 import logging.config
+import numpy as np
 
 from datamaker import DataMaker
 from load_model import create_model
@@ -62,3 +63,11 @@ if __name__ == "__main__":
     history = model.fit(train_image, train_label, epochs=EPOCHS, batch_size=BATCH_SIZE,
                         validation_data=(test_image, test_label),
                         callbacks=[tensorboard, ck, write_log], verbose=0)
+
+    optimal_loss = np.min(history.history['val_loss'])
+    optimal_epoch = history.history['val_loss'].index(optimal_loss) + 1
+    optimal_acc = (history.history['val_acc'][history.history['val_loss'].index(optimal_loss)]) * 100
+
+    logger.info(f' >> Optimal_Epoch : {optimal_epoch}')
+    logger.info(f' >> val_loss : {optimal_loss:.4f}({optimal_epoch} epoch)')
+    logger.info(f' >> val_acc : {optimal_acc:.4f}({optimal_epoch} epoch)')
