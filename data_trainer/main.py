@@ -1,6 +1,5 @@
 import os
 import logging.config
-import configparser
 import numpy as np
 
 from tensorflow.keras.callbacks import ModelCheckpoint, LambdaCallback
@@ -8,7 +7,8 @@ from tensorflow.keras.utils import to_categorical
 from datetime import datetime
 from datamaker import split_image, load_data
 from load_model import base_model, custom_model
-from roi import setting_roi, custom_roi
+from roi import setting_roi
+from load_config import config_set
 
 
 def __log():
@@ -16,16 +16,9 @@ def __log():
     return logging.getLogger("trainer")
 
 
-def __config():
-    config = configparser.ConfigParser()
-    config.read("train.ini")
-
-    return config
-
-
 def run(source_path, categories, roi, sample_image, validation_ratio, EPOCHS, BATCH_SIZE, height, width, depth):
     logger = __log()
-    set_model = config["model"]
+    set_model = config_set()
     classes = len(categories)
 
     train_set, test_set = split_image(source_path=source_path, categories=categories, sample_image=sample_image,
@@ -45,22 +38,22 @@ def run(source_path, categories, roi, sample_image, validation_ratio, EPOCHS, BA
 
     model = None
 
-    if set_model["base_model"] == "1":
+    if set_model["base_model"] == 1:
         model = base_model(x_train, classes=classes)
         logger.info(f"Model setting: Base Model")
 
-    if set_model["custom_model"] == "1":
+    if set_model["custom_model"] == 1:
         model = custom_model(x_train, classes=classes)
         logger.info(f"Model setting: Custom Model")
 
     if set_model["base_model"] == set_model["custom_model"]:
-        logger.error(f"check train.ini - model - base_model & custom_model")
+        logger.error(f"check config.ini - model - base_model & custom_model")
         logger.error(f"Ex. base_model = 1 -> custom_model = 0")
         logger.error(f"Ex. base_model = 0 -> custom_model = 1")
         exit()
 
     if not model:
-        logger.error(f"check train.ini - model - base_model & custom_model")
+        logger.error(f"check config.ini - model - base_model & custom_model")
         logger.error(f"Must One of the two should be 1")
         exit()
 
@@ -93,42 +86,39 @@ def run(source_path, categories, roi, sample_image, validation_ratio, EPOCHS, BA
 
 if __name__ == "__main__":
     logger = __log()
-    config = __config()
-    source_path = config["trainer"]["source_path"]
-    if "\\" in source_path:
-        source_path.replace("\\", "/")
+    config = config_set()
 
-    categories = [cat.strip() for cat in config["trainer"]["categories"].split(",")]
-
+    source_path = config["source_path"]
+    categories = config["categories"]
+    
     roi = None
+    if config["setting_roi"] == 1:
+        roi = setting_roi(config["set_roi"])
+        logger.info(f"Roi_setting: {config['set_roi']}")
 
-    if config["roi"]["setting_roi"] == "1":
-        roi = setting_roi(config["roi"]["set_roi"])
-        logger.info(f"Roi_setting: {config['roi']['set_roi']}")
-
-    if config["roi"]["custom_roi"] == "1":
-        roi = custom_roi(config["roi"]["cus_roi"])
+    if config["custom_roi"] == 1:
+        roi = config["cus_roi"]
         logger.info(f"Roi_setting: custom_roi")
 
-    if config["roi"]["setting_roi"] == config["roi"]["custom_roi"]:
-        logger.error(f"check train.ini - roi - setting_roi & custom_roi")
+    if config["setting_roi"] == config["custom_roi"]:
+        logger.error(f"check config.ini - roi - setting_roi & custom_roi")
         logger.error(f"Ex. setting_roi = 1 -> custom_roi = 0")
         logger.error(f"Ex. setting_roi = 0 -> custom_roi = 1")
         exit()
 
     if not roi:
-        logger.error(f"check train.ini - roi - setting_roi & custom_roi")
+        logger.error(f"check config.ini - roi - setting_roi & custom_roi")
         logger.error(f"Must One of the two should be 1")
         exit()
 
-    validation_ratio = float(config["trainer"]["validation_ratio"])
-    sample_image = int(config["trainer"]["sample_image"])
-    epoch = int(config["trainer"]["epoch"])
-    batch_size = int(config["trainer"]["batch_size"])
+    validation_ratio = config["validation_ratio"]
+    sample_image = config["sample_image"]
+    epoch = config["epoch"]
+    batch_size = config["batch_size"]
 
-    height = int(config["image_size"]["height"])
-    width = int(config["image_size"]["width"])
-    depth = int(config["image_size"]["depth"])
+    height = config["height"]
+    width = config["width"]
+    depth = config["depth"]
 
     run(source_path=source_path, categories=categories, roi=roi, sample_image=sample_image,
         validation_ratio=validation_ratio,

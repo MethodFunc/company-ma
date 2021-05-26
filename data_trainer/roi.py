@@ -71,7 +71,3 @@ def setting_roi(x):
 
     return ROI
 
-
-def custom_roi(roi):
-    temp = roi.split(",")
-    return [(int(shape.split("/")[0]), int(shape.split("/")[1])) for shape in temp]
